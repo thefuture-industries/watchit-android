@@ -71,3 +71,11 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
 }
+
+configurations.all {
+    exclude(group = "com.intellij", module = "annotations")
+
+    resolutionStrategy {
+        force("org.jetbrains:annotations:23.0.0")
+    }
+}
