@@ -4,7 +4,12 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
+import com.example.watchit.constants.LoggingTags;
+import com.example.watchit.constants.PreferenceKeys;
+import com.example.watchit.logging.Logging;
+import com.example.watchit.utils.PreferencesManager;
 import okhttp3.Interceptor;
+import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
@@ -19,13 +24,26 @@ public class ErrorInterceptor implements Interceptor {
 
     @Override
     public Response intercept(Chain chain) throws IOException {
-        Response response = chain.proceed(chain.request());
+        okhttp3.Request origRequest = chain.request();
 
+        // get authToken
+        PreferencesManager prefs = new PreferencesManager(context);
+        String authToken = prefs.getString(PreferenceKeys.AUTH_TOKEN);
+
+        okhttp3.Request.Builder reqBuilder = origRequest.newBuilder();
+        if (authToken != null && !authToken.isEmpty()) {
+            reqBuilder.addHeader("Authorization", "Bearer " + authToken);
+        }
+
+        okhttp3.Request reqWithAuth = reqBuilder.build();
+
+        // send request to server
+        Response response = chain.proceed(reqWithAuth);
         if (!response.isSuccessful()) {
             String errorMessage = "error on the server";
 
             try {
-                ResponseBody responseBody = response.body();
+                ResponseBody responseBody = response.peekBody(Long.MAX_VALUE);
                 if (responseBody != null) {
                     String responseString = responseBody.string();
 
@@ -33,7 +51,7 @@ public class ErrorInterceptor implements Interceptor {
                     errorMessage = jsonObject.optString("message", errorMessage);
                 }
             } catch (org.json.JSONException ex) {
-                System.out.println(ex.getMessage());
+                Logging.error(LoggingTags.JSON_PARSE_ERROR, ex.getMessage(), ex);
             }
 
             final String finalErrorMessage = errorMessage;
@@ -44,7 +62,7 @@ public class ErrorInterceptor implements Interceptor {
                 }
             });
 
-            // logger
+            Logging.error(LoggingTags.SERVER_RESPONSE_ERROR, finalErrorMessage, null);
         }
 
         return response;

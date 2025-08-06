@@ -1,10 +1,25 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
+}
+
+val localProperties = Properties()
+
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use {
+        localProperties.load(it)
+    }
 }
 
 android {
     namespace = "com.example.watchit"
     compileSdk = 36
+
+    buildFeatures {
+        buildConfig = true
+    }
 
     defaultConfig {
         applicationId = "com.example.watchit"
@@ -14,6 +29,14 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "SERVER_PROTO", "\"${localProperties["SERVER_PROTO"]}\"")
+        buildConfigField("String", "SERVER_ADDR", "\"${localProperties["SERVER_ADDR"]}\"")
+        buildConfigField("String", "SERVER_PORT", "\"${localProperties["SERVER_PORT"]}\"")
+        buildConfigField("String", "PROXY_ADDRESS", "\"${localProperties["PROXY_ADDRESS"]}\"")
+        buildConfigField("String", "PROXY_PORT", "\"${localProperties["PROXY_PORT"]}\"")
+        buildConfigField("String", "PROXY_USERNAME", "\"${localProperties["PROXY_USERNAME"]}\"")
+        buildConfigField("String", "PROXY_PASSWORD", "\"${localProperties["PROXY_PASSWORD"]}\"")
     }
 
     buildTypes {
@@ -43,6 +66,7 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("androidx.room:room-compiler:2.7.2")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
