@@ -6,9 +6,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
+        android:background="@color/black"
         tools:context=".MainActivity">
 
-    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                   android:id="@+id/topBar"
                   android:orientation="horizontal"
                   android:padding="16dp"
@@ -17,28 +18,37 @@
                   app:layout_constraintStart_toStartOf="parent"
                   app:layout_constraintEnd_toEndOf="parent">
 
-        <ImageView android:layout_width="48dp" android:layout_height="48dp"
+        <com.google.android.material.imageview.ShapeableImageView
+                   android:layout_width="43dp" android:layout_height="43dp"
                    android:id="@+id/profileImage"
                    android:src="@drawable/ic_profile"
-                   android:contentDescription="Profile image" />
+                   android:contentDescription="Profile image"
+                   app:shapeAppearanceOverlay="@style/CircularShape" />
 
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                   android:id="@+id/usernameProfile"
                   android:text="noneandundefined"
                   android:textSize="18sp"
-                  android:layout_marginStart="8dp" />
+                  android:layout_marginStart="14dp"
+                  android:textColor="#999999"/>
 
     </LinearLayout>
 
-    <include layout="@layout/content_main"/>
+    <FrameLayout android:layout_width="0dp" android:layout_height="0dp"
+                 app:layout_constraintBottom_toTopOf="parent"
+                 app:layout_constraintEnd_toEndOf="parent"
+                 app:layout_constraintStart_toStartOf="parent"
+                 app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
             android:id="@+id/bottomNavigation"
+            android:layout_gravity="bottom"
+            android:background="@android:color/transparent"
+            app:labelVisibilityMode="unlabeled"
             app:menu="@menu/bottom_navigation_menu"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:itemIconSize="35dp"
+            app:itemIconTint="@color/bottom_nav_icon_color" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
